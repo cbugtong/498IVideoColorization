@@ -1,0 +1,14 @@
+Group #13
+Chris Bugtong
+Mark Creamer
+Judith Fan
+
+Colorizing Videos
+
+Our project for the semester will be to colorize black and white videos. We will use existing resources on colorizing images in order to colorize an initial frame of the video, and then use the resources as well as information from the previous frame to colorize the next frame consistently, so that relatively ambiguous items (such as a cup) is not assigned a different hue for each frame.
+
+Data
+We plan to use ImageNet to acquire training data. Because colorization is a relatively commonly-studied problem, we expect there to be a very large amount of data available for us to use online.
+
+Testing
+In order to test, we wil look online for videos and convert them to black-and-white and observe the differences in colors. In addition, we will take out own videos and convert them to black-and-white and compare the generated video to the original.
