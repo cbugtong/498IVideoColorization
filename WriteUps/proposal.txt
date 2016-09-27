@@ -6,14 +6,13 @@ Judith Fan
 Colorizing Black And White Videos
 
 Summary
-Our project for the semester will be to colorize black and white videos. We will use existing resources on colorizing images in order to colorize an initial frame of the video, and then use the resources as well as information from the previous frame to colorize the next frame consistently, so that relatively ambiguous items (such as a cup) are not assigned a different hue for each frame.
+Our project for the semester will be to colorize black and white videos. We will use existing resources on colorizing images in order to colorize an initial frame of the video, and then use the resources as well as information from the previous frame to colorize the next frame consistently, so that relatively ambiguous items (such as a cup) are not assigned a different hue for each frame. Theoretically, this approach would save computational time. Some of the challenges we would face would be abrupt switching of perspective, such as a scene change. In this case, obviously the previous frame will not be able to help color the next. Yet another challenge would be detecting when this change occurs.
 
 Data
-We plan to use ImageNet to acquire training data. Because colorization is a relatively commonly-studied problem, we expect there to be a very large amount of data available for us to use online.
+Since our system relies on colorizing 2D images, we plan to use ImageNet to acquire training data. Because colorization is a relatively commonly studied problem, we expect there to be a very large amount of data available for us to use online.
 
 Develop
-As for the tools we will use, we have settled on using Python. We will also use Caffe, a deep learning framework that is common for computer vision tasks such as colorization. We also found a github with code that we will leverage to colorize images (https://github.com/richzhang/colorization). Other possible resources beside ImageNet and Caffe are VGGNetwork and RestNet.
+As for the tools we will use, we have settled on using Python. We will also use Caffe, a deep learning framework that is common for computer vision tasks such as colorization. We find Caffe ideal for our particular task since we want to find a preexisting model and intend on making minimal changes to it. We also found a github with code that we could leverage to colorize images (https://github.com/richzhang/colorization). Other possible resources beside ImageNet and Caffe are VGGNetwork and RestNet.
 
 Testing
 In order to test, we will look online for videos and convert them to black and white and observe the differences in colors. In addition, we will take our own videos and convert them to black and white, comparing the generated video to the original.
-
