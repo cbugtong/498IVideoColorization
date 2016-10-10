@@ -21,7 +21,7 @@ Evaluation
 Because our main differentiation from past work is the temporal consistency of our work, the evaluation of our project will focus on the consistency of the colors between different frames. Our earliest measure of success (or 'safe goal') would rely on whether we can correctly color a slow-moving video with no scene changes. If we succeed in this, we will try to recognize when a drastic scene change occurs between frames so that our program does not attempt to keep temporal consistency in this case. Our stretch goal is to recognize if a particular object is the same between drastically different frames and color it consistently.
 
 Work Division
-While every member will write code as necessary, Mark will be the primary developer of our project, Judy will complete all writing assignments and code as needed, and Chris will switch between roles to balance out the work load. As coding will likely be the heaviest task of our project, we expect each teammate's work content to be as follows:
+While every member will write code as necessary, Mark will be the primary developer of our project, Judy will complete all writing assignments and code as needed, and Chris will switch between roles to balance out the work load and research the literature regarding colorization as needed. As coding will likely be the heaviest task of our project, we expect each teammate's work content to be as follows:
 Mark: 100% coding
 Chris: 80% coding, 20% writing/other tasks
 Judy: 40% coding, 60% writing/other tasks
