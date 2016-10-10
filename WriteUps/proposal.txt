@@ -11,8 +11,17 @@ Our project for the semester will be to colorize black and white videos. We will
 Data
 Since our system relies on colorizing 2D images, we plan to use ImageNet to acquire training data. Because colorization is a relatively commonly studied problem, we expect there to be a very large amount of data available for us to use online.
 
-Develop
+Development
 As for the tools we will use, we have settled on using Python. We will also use Caffe, a deep learning framework that is common for computer vision tasks such as colorization. We find Caffe ideal for our particular task since we want to find a preexisting model and intend on making minimal changes to it. We also found a github with code that we could leverage to colorize images (https://github.com/richzhang/colorization). Other possible resources beside ImageNet and Caffe are VGGNetwork and RestNet.
 
 Testing
 In order to test, we will look online for videos and convert them to black and white and observe the differences in colors. In addition, we will take our own videos and convert them to black and white, comparing the generated video to the original.
+
+Evaluation
+Because our main differentiation from past work is the temporal consistency of our work, the evaluation of our project will focus on the consistency of the colors between different frames. Our earliest measure of success (or 'safe goal') would rely on whether we can correctly color a slow-moving video with no scene changes. If we succeed in this, we will try to recognize when a drastic scene change occurs between frames so that our program does not attempt to keep temporal consistency in this case. Our stretch goal is to recognize if a particular object is the same between drastically different frames and color it consistently.
+
+Work Division
+While every member will write code as necessary, Mark will be the primary developer of our project, Judy will complete all writing assignments and code as needed, and Chris will switch between roles to balance out the work load. As coding will likely be the heaviest task of our project, we expect the division of tasks to be as follows:
+Mark: 100% coding
+Chris: 80% coding, 20% writing/other tasks
+Judy: 40% coding, 60% writing/other tasks
