@@ -2,7 +2,6 @@
 from sklearn import datasets, svm, metrics
 import numpy as np
 import matplotlib.pyplot as plt
-import os
 import skimage.color as color
 import scipy.ndimage.interpolation as sni
 import csv
@@ -52,8 +51,8 @@ print float(loss)/len(testY)
 expected = testY
 predicted = classifier.predict(testX)
 
-print("Classification report for classifier %s:\n%s\n"
+# print("Classification report for classifier %s:\n%s\n"
       % (classifier, metrics.classification_report(expected, predicted)))
-print("Confusion matrix:\n%s" % metrics.confusion_matrix(expected, predicted))
+# print("Confusion matrix:\n%s" % metrics.confusion_matrix(expected, predicted))
 
 sceneClassTrain.close();

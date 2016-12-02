@@ -10,14 +10,12 @@ import operator
 '''
 This is a script that tests out places205CNN
 '''
-
 gpu_id = 0
 caffe.set_mode_gpu()
 caffe.set_device(gpu_id)
 net = caffe.Net('../placesCNN/places205CNN_deploy.prototxt', 1, weights='../placesCNN/places205CNN_iter_300000.caffemodel')
 
 (H_in,W_in) = net.blobs['data'].data.shape[2:] # get input shape
-print net.blobs['data'].data.shape[2:]
 
 img_rgb = caffe.io.load_image('./imgs/sky.jpg')
 img_lab = color.rgb2lab(img_rgb) # convert image to lab color space
