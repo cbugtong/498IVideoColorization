@@ -23,13 +23,10 @@ for i in range(0,len(classes)):
 	hMap = np.zeros((hMapWidth,hMapHeight,3))
 	numPics = 0
 
-	j = 0
 	for subdir, dirs, files in os.walk(scenesDir+classes[i]):
 		# Iterate over each image file
 		for imgfile in files:
 			if(imgfile.endswith('.png') or imgfile.endswith('.jpg')):
-				# if j >= 20:
-				# 	break
 				imgfilename = os.path.join(subdir,imgfile)
 
 				# Ensure that the images are scaled appropriately
@@ -39,21 +36,26 @@ for i in range(0,len(classes)):
 				# Add to the average
 				for x in range(hMapWidth):
 					for y in range(hMapHeight):
-						hMap[x][y] = (hMap[x][y][0]+rs[x][y][0],hMap[x][y][1]+rs[x][y][1],hMap[x][y][2]+rs[x][y][2])
+						hMap[x,y] = (hMap[x,y][0]+rs[x][y][0],hMap[x,y][1]+rs[x][y][1],hMap[x,y][2]+rs[x][y][2])
 				
 				numPics += 1
-				j+=1
 		# Divide by the number of images to get the average
 		for x in range(hMapWidth):
 			for y in range(hMapHeight):
-				hMap[x][y] = (hMap[x][y][0]/numPics,hMap[x][y][1]/numPics,hMap[x][y][2]/numPics)
+				hMap[x,y] = (hMap[x,y][0]/numPics,hMap[x,y][1]/numPics,hMap[x,y][2]/numPics)
 
 		# Show the heatmap
 		# plt.imshow(hMap)
-		# plt.show()
+		# plt.savefig('heatmap_'+str(i))
 
 		# Save the heatmap
-		j = Image.fromarray(hMap)
-		j.save("~/Desktop/heatmap_"+str(i),".jpg")
+		hMapSaveCopy = Image.new('RGB', (hMapWidth,hMapHeight))
+		hMapSaveCopyPixels = hMapSaveCopy.load()
+
+		for x in range (0,hMapWidth):
+			for y in range (0,hMapHeight):
+				hMapSaveCopyPixels[y,x] = (int(hMap[x,y][0]*256),int(hMap[x,y][1]*256),int(hMap[x,y][2]*256))
+
+		hMapSaveCopy.save("heatmaps/heatmap_"+str(i)+".png","PNG")
 
 	print "Done with "+classes[i]
