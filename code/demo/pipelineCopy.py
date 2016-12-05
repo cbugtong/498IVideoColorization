@@ -112,7 +112,9 @@ def trainSVM(classifier):
 '''
 Given an image and a heatmap, this method returns a weighted average of both
 '''
-def applyWeightedAverage(image, heatmap, w):
+def applyWeightedAverage(image, heatmap, w, threshold):
+	# TODO normalize the image scale
+
 	# Get the image dimensions
 	(imWidth, imHeight) = image.shape[:2]
 
@@ -120,56 +122,125 @@ def applyWeightedAverage(image, heatmap, w):
 	result = np.zeros((imWidth,imHeight,3))
 
 	# Resize the heatmap to match the image dimensions
-	heatmapResized = caffe.io.resize_image(heatmap, (imWidth, imHeight))
+	heatmap_rs = caffe.io.resize_image(heatmap, (imWidth, imHeight))
 
-	result = image*(1-w)+heatmapResized*w
+	# Convert both the image and the heatmap to lab
+	image_lab = color.rgb2lab(image)
+	heatmap_rs_lab = color.rgb2lab(heatmap_rs)
 
-	for i in range(0,imWidth):
-		for j in range(0,imHeight):
-			(i_r, i_g, i_b) = image[i,j]
-			(h_r, h_g, h_b) = heatmapResized[i,j]
-			result[i,j] = (i_r*(1-w)+h_r*w, i_g*(1-w)+h_g*w, i_b*(1-w)+h_b*w)
+	# Compute the weighted average
+	# result = image_lab*(1-w)+heatmap_rs_lab*w
 
-	return result
+	# Code for rgb
+	# for i in range(imWidth):
+	# 	for j in range(imHeight):
+	# 		(i_r,i_g,i_b) = image[i,j]
+	# 		(h_r,h_g,h_b) = heatmap_rs[i,j]
+
+	# 		rDiff = i_r - h_r
+	# 		gDiff = i_g - h_g
+	# 		bDiff = i_b - h_b
+	# 		if rDiff > threshold or gDiff > threshold or bDiff > threshold:
+	# 			result[i,j] = (i_r*(1-w)+h_r*w,i_g*(1-w)+h_g*w,i_b*(1-w)+h_b*w)
+
+	# 			# Debug: Highlights the affected areas in purple
+	# 			# result[i,j] = (1,0,1)
+	# 		else:
+	# 			result[i,j] = image[i,j]
+
+	# Code for lab
+	for i in range(imWidth):
+		for j in range(imHeight):
+			(i_l,i_a,i_b) = image_lab[i,j]
+			(h_l,h_a,h_b) = heatmap_rs_lab[i,j]
+
+			aDiff = i_a - h_a
+			bDiff = i_b - h_b
+			if aDiff > threshold or bDiff > threshold:
+				result[i,j] = (i_l*(1-w)+h_l*w,i_a*(1-w)+h_a*w,i_b*(1-w)+h_b*w)
+
+				# Debug: Highlights the affected areas in purple
+				# result[i,j] = (1,0,1)
+			else:
+				result[i,j] = image_lab[i,j]
+
+	# Convert back to rgb
+	result_rgb = color.lab2rgb(result)
+
+	return result_rgb
+
+'''
+Given the ground truth and the prediction image, computes the MSE
+'''
+def getMeanSquareError(gTruth, prediction):
+	# Get the image dimensions
+	(imWidth, imHeight) = gTruth.shape[:2]
+
+	error = gTruth - prediction
+
+	mse = np.sum(np.sum(error * error))	# TODO: Make sure that this is right
+
+	mse /= imWidth * imHeight
+
+	return mse
 
 '''
 The script starts here!
 '''
-for i in range(3,7):
-	imageFileName = 'imgs/mark'+str(i)+'.JPG'
+imageFileName = 'imgs/test/suicideforest.jpg'
 
-	groundTruth = caffe.io.load_image(imageFileName)
+groundTruth = caffe.io.load_image(imageFileName)
 
-	# Put the black and white image through the richard zhang pipeline
-	colorizedImage = colorize(imageFileName)
+# Put the black and white image through the Richard Zhang pipeline
+colorizedImage = colorize(imageFileName)
 
-	# Train the scene classifier
-	classifier = svm.SVC(gamma=10,kernel='rbf',probability=True)
-	trainSVM(classifier)
+# Train the scene classifier
+classifier = svm.SVC(gamma=10,kernel='rbf',probability=True)
+trainSVM(classifier)
 
-	# Classify the image:
-	# 	run through places205CNN
-	#	give the places205CNN probs to the svm
-	placesProbs = placesCNNRun(imageFileName)
-	scenePredictionIndex = classifier.predict(placesProbs)
+# Classify the image:
+# 	run through places205CNN
+#	give the places205CNN probs to the svm
+placesProbs = placesCNNRun(imageFileName)
+scenePredictionIndex = classifier.predict(placesProbs)
 
-	# Grab the corresponding heatmap
-	heatmap = caffe.io.load_image('heatmaps/heatmap_'+scenes[scenePredictionIndex]+'.png')
+# Grab the corresponding heatmap
+heatmap = caffe.io.load_image('heatmaps/heatmap_'+scenes[scenePredictionIndex]+'.png')
+
+# Show the final results for these parameters
+params = [(0.5,0.5), (0.4, 0.4), (0.3, 0.3), (0.2, 0.2), (0.1, 0.1)]
+result = []
+
+# Side length
+sideLength = np.ceil(np.sqrt(2+len(params)))
+
+fig = plt.figure()
+a=fig.add_subplot(sideLength,sideLength,1)
+imgplot=plt.imshow(colorizedImage)
+a.set_title('Colorized Image')
+
+print "RichZhang MSE: "+str(getMeanSquareError(groundTruth, colorizedImage))
+
+a=fig.add_subplot(sideLength,sideLength,2)
+imgplot=plt.imshow(groundTruth)
+a.set_title('Ground Truth')
+
+for j in range(len(params)):
+	paramTuple = params[j]
 
 	# Based on the loss or mean squared error, apply a weighted average between the heatmap and the loss region
-	result = applyWeightedAverage(colorizedImage, heatmap, 0.9)
+	result.append(applyWeightedAverage(colorizedImage, heatmap, paramTuple[0], paramTuple[1]))
 
-	# Show the final result
-	fig = plt.figure()
-	a=fig.add_subplot(1,3,1)
-	imgplot=plt.imshow(colorizedImage)
-	a.set_title('Colorized Image')
+	# Add the weighted average with the paramTuple parameters to the matlab plot
+	a=fig.add_subplot(sideLength,sideLength,3+j)
+	imgplot=plt.imshow(result[j])
+	a.set_title(scenes[scenePredictionIndex]+':('+str(paramTuple[0])+' w, '+str(paramTuple[1])+' t)')
 
-	a=fig.add_subplot(1,3,2)
-	imgplot=plt.imshow(groundTruth)
-	a.set_title('Ground Truth')
+	print "Result #"+str(j+1)+" MSE: "+str(getMeanSquareError(groundTruth,result[j]))
 
-	a=fig.add_subplot(1,3,3)
-	imgplot=plt.imshow(result)
-	a.set_title(scenes[scenePredictionIndex]+' weighted average')
-	plt.show()
+plt.show()
+
+# Consider using Lab so the brightness is maintained
+# Make it so you selectively average the heatmap with the colorized image if they differ greater than a certain threshold
+# The scale of the image when you're applying the heatmap. Consider normalizing the image to match the heatmap scale
+# Calculate MSE

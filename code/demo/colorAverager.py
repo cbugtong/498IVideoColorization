@@ -34,15 +34,11 @@ for i in range(0,len(classes)):
 				rs = caffe.io.resize_image(caffeimg,(hMapWidth,hMapHeight))
 
 				# Add to the average
-				for x in range(hMapWidth):
-					for y in range(hMapHeight):
-						hMap[x,y] = (hMap[x,y][0]+rs[x][y][0],hMap[x,y][1]+rs[x][y][1],hMap[x,y][2]+rs[x][y][2])
+				hMap += rs
 				
 				numPics += 1
 		# Divide by the number of images to get the average
-		for x in range(hMapWidth):
-			for y in range(hMapHeight):
-				hMap[x,y] = (hMap[x,y][0]/numPics,hMap[x,y][1]/numPics,hMap[x,y][2]/numPics)
+		hMap /= numPics
 
 		# Show the heatmap
 		# plt.imshow(hMap)
