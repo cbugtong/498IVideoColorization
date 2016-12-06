@@ -18,7 +18,7 @@ net.blobs['Trecip'].data[...] = 6/np.log(10) # 1/T, set annealing temperature
     # (We found that we had introduced a factor of log(10). We will update the arXiv shortly.)
 
 # load the original image
-img_rgb = caffe.io.load_image('./imgs/ansel_adams.jpg')
+img_rgb = caffe.io.load_image('./imgs/mark5_color.JPG')
 
 img_lab = color.rgb2lab(img_rgb) # convert image to lab color space
 img_l = img_lab[:,:,0] # pull out L channel

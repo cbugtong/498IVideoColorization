@@ -124,11 +124,11 @@ def applyWeightedAverage(image, heatmap, w):
 
 	result = image*(1-w)+heatmapResized*w
 
-	for i in range(0,imWidth):
-		for j in range(0,imHeight):
-			(i_r, i_g, i_b) = image[i,j]
-			(h_r, h_g, h_b) = heatmapResized[i,j]
-			result[i,j] = (i_r*(1-w)+h_r*w, i_g*(1-w)+h_g*w, i_b*(1-w)+h_b*w)
+	# for i in range(0,imWidth):
+	# 	for j in range(0,imHeight):
+	# 		(i_r, i_g, i_b) = image[i,j]
+	# 		(h_r, h_g, h_b) = heatmapResized[i,j]
+	# 		result[i,j] = (i_r*(1-w)+h_r*w, i_g*(1-w)+h_g*w, i_b*(1-w)+h_b*w)
 
 	return result
 

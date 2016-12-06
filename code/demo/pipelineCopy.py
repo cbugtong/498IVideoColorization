@@ -129,7 +129,7 @@ def applyWeightedAverage(image, heatmap, w, threshold):
 	heatmap_rs_lab = color.rgb2lab(heatmap_rs)
 
 	# Compute the weighted average
-	# result = image_lab*(1-w)+heatmap_rs_lab*w
+	result = image_lab*(1-w)+heatmap_rs_lab*w
 
 	# Code for rgb
 	# for i in range(imWidth):
@@ -149,20 +149,21 @@ def applyWeightedAverage(image, heatmap, w, threshold):
 	# 			result[i,j] = image[i,j]
 
 	# Code for lab
-	for i in range(imWidth):
-		for j in range(imHeight):
-			(i_l,i_a,i_b) = image_lab[i,j]
-			(h_l,h_a,h_b) = heatmap_rs_lab[i,j]
+	# for i in range(imWidth):
+	# 	for j in range(imHeight):
+	# 		(i_l,i_a,i_b) = image_lab[i,j]
+	# 		(h_l,h_a,h_b) = heatmap_rs_lab[i,j]
 
-			aDiff = i_a - h_a
-			bDiff = i_b - h_b
-			if aDiff > threshold or bDiff > threshold:
-				result[i,j] = (i_l*(1-w)+h_l*w,i_a*(1-w)+h_a*w,i_b*(1-w)+h_b*w)
+	# 		aDiff = i_a - h_a
+	# 		bDiff = i_b - h_b
+	# 		if aDiff > threshold or bDiff > threshold:
+	# 			#result[i,j] = (i_l*(1-w)+h_l*w,i_a*(1-w)+h_a*w,i_b*(1-w)+h_b*w)
+	# 			result[i,j] = (i_l,i_a*(1-w)+h_a*w,i_b*(1-w)+h_b*w)
 
-				# Debug: Highlights the affected areas in purple
-				# result[i,j] = (1,0,1)
-			else:
-				result[i,j] = image_lab[i,j]
+	# 			# Debug: Highlights the affected areas in purple
+	# 			# result[i,j] = (1,0,1)
+	# 		else:
+	# 			result[i,j] = image_lab[i,j]
 
 	# Convert back to rgb
 	result_rgb = color.lab2rgb(result)
@@ -185,9 +186,25 @@ def getMeanSquareError(gTruth, prediction):
 	return mse
 
 '''
+Given imageData and a filename, save the file
+'''
+def saveImage(imageData, filename):
+	# Get the image dimensions
+	(imWidth, imHeight) = imageData.shape[:2]
+
+	saveCopy = Image.new('RGB', (imWidth,imHeight))
+	saveCopyPixels = saveCopy.load()
+
+	for x in range (0,imWidth):
+		for y in range (0,imHeight):
+			saveCopyPixels[y,x] = (int(imageData[x,y][0]*256),int(imageData[x,y][1]*256),int(imageData[x,y][2]*256))
+
+	saveCopy.save("results/"+filename+".png","PNG")
+
+'''
 The script starts here!
 '''
-imageFileName = 'imgs/test/suicideforest.jpg'
+imageFileName = 'imgs/test/smallBeach.jpg'
 
 groundTruth = caffe.io.load_image(imageFileName)
 
@@ -208,7 +225,9 @@ scenePredictionIndex = classifier.predict(placesProbs)
 heatmap = caffe.io.load_image('heatmaps/heatmap_'+scenes[scenePredictionIndex]+'.png')
 
 # Show the final results for these parameters
-params = [(0.5,0.5), (0.4, 0.4), (0.3, 0.3), (0.2, 0.2), (0.1, 0.1)]
+#params = [(0.9,0.9), (0.8,0.9), (0.7,0.9), (0.6,0.9), (0.5,0.9), (0.4, 0.9), (0.3, 0.9), (0.2, 0.9), (0.1, 0.9)]
+params = [(0.3,0.9)]
+
 result = []
 
 # Side length
@@ -218,6 +237,8 @@ fig = plt.figure()
 a=fig.add_subplot(sideLength,sideLength,1)
 imgplot=plt.imshow(colorizedImage)
 a.set_title('Colorized Image')
+#a.set_title('Rich Zhang (MSE: '+str(getMeanSquareError(groundTruth, colorizedImage))+')')
+saveImage(colorizedImage,'smallBeachColorized')
 
 print "RichZhang MSE: "+str(getMeanSquareError(groundTruth, colorizedImage))
 
@@ -236,7 +257,9 @@ for j in range(len(params)):
 	imgplot=plt.imshow(result[j])
 	a.set_title(scenes[scenePredictionIndex]+':('+str(paramTuple[0])+' w, '+str(paramTuple[1])+' t)')
 
-	print "Result #"+str(j+1)+" MSE: "+str(getMeanSquareError(groundTruth,result[j]))
+	saveImage(result[j],'smallBeachw'+str(paramTuple[0])+'t'+str(paramTuple[1]))
+
+	print "Result #"+str(j+1)+" (w:"+str(paramTuple[0])+" t:"+str(paramTuple[1])+") MSE: "+str(getMeanSquareError(groundTruth,result[j]))
 
 plt.show()
 
